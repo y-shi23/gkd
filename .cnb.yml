@@ -1,0 +1,34 @@
+main:
+  push:
+    - stages:
+        - name: sync to github
+          imports: https://cnb.cool/1oved/secrets/-/blob/main/sync-env.yml
+          image: tencentcom/git-sync
+          settings:
+            target_url: https://github.com/y-shi23/gkd.git
+            auth_type: https
+            username: ${GIT_USERNAME}
+            password: ${GIT_ACCESS_TOKEN}
+
+docker:
+  push:
+    - services:
+        - docker
+      stages:
+        # 同名镜像构建&推送
+        - name: docker build
+          script: docker build -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest .
+        - name: docker push
+          script: docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest
+
+$:
+  vscode:
+    - docker:
+        image: docker.cnb.cool/1oved/dev-env-next:latest
+      services:
+        - vscode
+        - docker
+      # 开发环境启动后会执行的任务
+      stages:
+        - name: ls
+          script: ls -al
