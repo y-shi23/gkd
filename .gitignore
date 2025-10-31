@@ -24,3 +24,5 @@ local.properties
 /.kotlin
 
 /gradle/libs.versions.updates.toml
+
+.claude/
