@@ -9,6 +9,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
 import li.songe.gkd.a11y.TopActivity
 import li.songe.gkd.a11y.screenshot
 import li.songe.gkd.a11y.topActivityFlow
@@ -28,6 +30,32 @@ object SnapshotExt {
 
     private fun snapshotParentPath(id: Long) = snapshotFolder.resolve(id.toString())
     fun snapshotFile(id: Long) = snapshotParentPath(id).resolve("${id}.json")
+    private fun minSnapshotFile(id: Long): File {
+        return snapshotParentPath(id).resolve("${id}.min.json")
+    }
+
+    suspend fun getMinSnapshot(id: Long): JsonObject {
+        val f = minSnapshotFile(id)
+        if (!f.exists()) {
+            val text = withContext(Dispatchers.IO) { snapshotFile(id).readText() }
+            val snapshotJson = withContext(Dispatchers.Default) {
+                // #1185
+                json.decodeFromString<JsonObject>(text)
+            }
+            val minSnapshot = JsonObject(snapshotJson.toMutableMap().apply {
+                this["nodes"] = JsonArray(emptyList())
+            })
+            withContext(Dispatchers.IO) {
+                f.writeText(keepNullJson.encodeToString(minSnapshot))
+            }
+            return minSnapshot
+        }
+        val text = withContext(Dispatchers.IO) { f.readText() }
+        return withContext(Dispatchers.Default) {
+            json.decodeFromString<JsonObject>(text)
+        }
+    }
+
     fun screenshotFile(id: Long) = snapshotParentPath(id).resolve("${id}.png")
 
     suspend fun snapshotZipFile(
@@ -164,8 +192,14 @@ object SnapshotExt {
                 screenshotFile(snapshot.id).outputStream().use { stream ->
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
                 }
-                val text = keepNullJson.encodeToString(snapshot)
-                snapshotFile(snapshot.id).writeText(text)
+                snapshotFile(snapshot.id).writeText(keepNullJson.encodeToString(snapshot))
+                minSnapshotFile(snapshot.id).writeText(
+                    keepNullJson.encodeToString(
+                        snapshot.copy(
+                            nodes = emptyList()
+                        )
+                    )
+                )
                 DbSet.snapshotDao.insert(snapshot.toSnapshot())
             }
             toast("快照成功")
