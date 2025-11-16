@@ -7,6 +7,7 @@ import li.songe.gkd.META
 import li.songe.gkd.util.AndroidTarget
 import li.songe.gkd.util.checkExistClass
 
+@Suppress("unused")
 class SafePackageManager(private val value: IPackageManager) {
     companion object {
         val isAvailable: Boolean
@@ -70,7 +71,10 @@ class SafePackageManager(private val value: IPackageManager) {
     )
 
     fun allowAllSelfPermission() {
-        grantSelfPermission("com.android.permission.GET_INSTALLED_APPS")
+        try {
+            grantSelfPermission("com.android.permission.GET_INSTALLED_APPS")
+        } catch (e: Throwable) {
+        }
         grantSelfPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
         if (AndroidTarget.TIRAMISU) {
             grantSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
