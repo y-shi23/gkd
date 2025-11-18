@@ -43,6 +43,23 @@ fun getStubService(name: String, condition: Boolean): ShizukuBinderWrapper? {
     return ShizukuBinderWrapper(service)
 }
 
+fun Class<*>.detectHiddenMethod(
+    methodName: String,
+    vararg args: Pair<Int, List<Class<*>>>,
+): Int {
+    declaredMethods.forEach { method ->
+        if (method.name == methodName) {
+            val types = method.parameterTypes.toList()
+            args.forEach { (value, argTypes) ->
+                if (types == argTypes) {
+                    return value
+                }
+            }
+        }
+    }
+    throw NoSuchMethodException()
+}
+
 class ShizukuContext(
     val serviceWrapper: UserServiceWrapper?,
     val packageManager: SafePackageManager?,
