@@ -65,13 +65,17 @@ fun PerfIcon(
     imageVector: ImageVector,
     modifier: Modifier = Modifier,
     tint: Color = LocalContentColor.current,
-    contentDescription: String? = getDefaultDesc(imageVector),
-) = Icon(
-    imageVector = imageVector,
-    modifier = modifier,
-    contentDescription = contentDescription,
-    tint = tint
-)
+    contentDescription: String? = getIconDefaultDesc(imageVector),
+) = PerfTooltipBox(
+    tooltipText = contentDescription,
+) {
+    Icon(
+        imageVector = imageVector,
+        modifier = modifier,
+        contentDescription = contentDescription,
+        tint = tint
+    )
+}
 
 @Composable
 fun PerfIconButton(
@@ -80,7 +84,7 @@ fun PerfIconButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     colors: IconButtonColors = IconButtonDefaults.iconButtonColors(),
-    contentDescription: String? = getDefaultDesc(imageVector),
+    contentDescription: String? = getIconDefaultDesc(imageVector),
     onClickLabel: String? = null,
     tint: Color = LocalContentColor.current,
 ) = IconButton(
@@ -106,12 +110,16 @@ fun PerfIcon(
     modifier: Modifier = Modifier,
     tint: Color = LocalContentColor.current,
     contentDescription: String? = null,
-) = Icon(
-    painter = painterResource(id),
-    modifier = modifier,
-    contentDescription = contentDescription,
-    tint = tint
-)
+) = PerfTooltipBox(
+    tooltipText = contentDescription,
+) {
+    Icon(
+        painter = painterResource(id),
+        modifier = modifier,
+        contentDescription = contentDescription,
+        tint = tint
+    )
+}
 
 @Composable
 fun PerfIconButton(
@@ -138,7 +146,7 @@ fun PerfIconButton(
     )
 }
 
-private fun getDefaultDesc(imageVector: ImageVector): String? = when (imageVector) {
+fun getIconDefaultDesc(imageVector: ImageVector): String? = when (imageVector) {
     PerfIcon.Add -> "添加"
     PerfIcon.Edit -> "编辑"
     PerfIcon.Save -> "保存"
@@ -154,6 +162,7 @@ private fun getDefaultDesc(imageVector: ImageVector): String? = when (imageVecto
     PerfIcon.Sort -> "排序筛选"
     PerfIcon.OpenInNew -> "新页面打开"
     PerfIcon.ContentCopy -> "复制文本"
+    PerfIcon.MoreVert -> "更多操作"
     else -> null
 }
 

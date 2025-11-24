@@ -84,6 +84,7 @@ fun useControlPage(): ScaffoldExt {
                 PerfIconButton(
                     imageVector = PerfIcon.RocketLaunch,
                     onClickLabel = "前往无障碍授权页面",
+                    contentDescription = "无障碍授权",
                     onClick = throttle {
                         mainVm.navigatePage(AuthA11YPageDestination)
                     },
@@ -286,7 +287,8 @@ private fun IconTextCard(
                 .background(MaterialTheme.colorScheme.primaryContainer)
                 .padding(8.dp)
                 .size(24.dp),
-            tint = MaterialTheme.colorScheme.primary
+            tint = MaterialTheme.colorScheme.primary,
+            contentDescription = null,
         )
         Spacer(modifier = Modifier.width(itemHorizontalPadding))
         content()

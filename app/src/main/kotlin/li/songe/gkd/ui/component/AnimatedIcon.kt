@@ -24,12 +24,16 @@ fun AnimatedIcon(
         animation,
         atEnd,
     )
-    Icon(
-        modifier = modifier,
-        painter = painter,
-        contentDescription = contentDescription,
-        tint = tint,
-    )
+    PerfTooltipBox(
+        tooltipText = contentDescription,
+    ) {
+        Icon(
+            modifier = modifier,
+            painter = painter,
+            contentDescription = contentDescription,
+            tint = tint,
+        )
+    }
 }
 
 private fun getIconDesc(@DrawableRes id: Int, atEnd: Boolean): String? = when (id) {
